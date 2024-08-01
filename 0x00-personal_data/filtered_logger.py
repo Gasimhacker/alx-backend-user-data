@@ -7,6 +7,29 @@ from typing import List
 import logging
 
 
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
+
+
+def get_logger() -> logging.Logger:
+    """Create a logging.Logger object"""
+    logger = logging.getLogger("user_data")
+    logger.propagate = False
+    logger.setLevel(logging.INFO)
+
+    sh = logging.StreamHandler()
+    sh.setFormatter(RedactingFormatter(list(PII_FIELDS)))
+    logger.addHandler(sh)
+
+    return logger
+
+
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
+    """Obfuscate fileds inside a message"""
+    field = '|'.join(fields)
+    return re.sub(fr'({field})=[^{separator}]*', fr'\1={redaction}', message)
+
+
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
         """
@@ -24,10 +47,3 @@ class RedactingFormatter(logging.Formatter):
         record.msg = filter_datum(self.fields, self.REDACTION,
                                   record.getMessage(), self.SEPARATOR)
         return super(RedactingFormatter, self).format(record)
-
-
-def filter_datum(fields: List[str], redaction: str,
-                 message: str, separator: str) -> str:
-    """Obfuscate fileds inside a message"""
-    field = '|'.join(fields)
-    return re.sub(fr'({field})=[^{separator}]*', fr'\1={redaction}', message)
