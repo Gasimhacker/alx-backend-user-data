@@ -3,10 +3,10 @@
 A module that defines a function filter_datum
 """
 import re
-import os
 import logging
 import mysql.connector
 from typing import List
+from os import environ
 
 
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
@@ -34,10 +34,10 @@ def filter_datum(fields: List[str], redaction: str,
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Connect to secure database"""
-    user = os.getenv('PERSONAL_DATA_DB_USERNAME', default='root')
-    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', default='')
-    host = os.getenv('PERSONAL_DATA_DB_HOST', default='localhost')
-    db = os.getenv('PERSONAL_DATA_DB_NAME')
+    user = environ.get('PERSONAL_DATA_DB_USERNAME', default='root')
+    password = environ.get('PERSONAL_DATA_DB_PASSWORD', default='')
+    host = environ.get('PERSONAL_DATA_DB_HOST', default='localhost')
+    db = environ.get('PERSONAL_DATA_DB_NAME')
 
     return mysql.connector.connect(
       host=host,
