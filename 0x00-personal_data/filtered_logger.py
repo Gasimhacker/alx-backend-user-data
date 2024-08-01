@@ -3,8 +3,10 @@
 A module that defines a function filter_datum
 """
 import re
-from typing import List
+import os
 import logging
+import mysql.connector
+from typing import List
 
 
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
@@ -28,6 +30,21 @@ def filter_datum(fields: List[str], redaction: str,
     """Obfuscate fileds inside a message"""
     field = '|'.join(fields)
     return re.sub(fr'({field})=[^{separator}]*', fr'\1={redaction}', message)
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Connect to secure database"""
+    user = os.getenv('PERSONAL_DATA_DB_USERNAME', default='root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', default='')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', default='localhost')
+    db = os.getenv('PERSONAL_DATA_DB_NAME')
+
+    return mysql.connector.connect(
+      host=host,
+      user=user,
+      password=password,
+      database=db
+    )
 
 
 class RedactingFormatter(logging.Formatter):
