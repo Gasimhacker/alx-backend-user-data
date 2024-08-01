@@ -3,9 +3,9 @@
 A module that defines a function filter_datum
 """
 import re
-import os
 import logging
 import mysql.connector
+from os import environ
 from typing import List
 
 
@@ -34,10 +34,10 @@ def filter_datum(fields: List[str], redaction: str,
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Connect to secure database"""
-    user = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
-    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
-    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
-    db = os.getenv('PERSONAL_DATA_DB_NAME')
+    user = environ.get('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = environ.get('PERSONAL_DATA_DB_PASSWORD', '')
+    host = environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
+    db = environ.get('PERSONAL_DATA_DB_NAME')
 
     return mysql.connector.connection.MySQLConnection(
       host=host,
