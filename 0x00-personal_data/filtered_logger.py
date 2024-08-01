@@ -66,3 +66,25 @@ class RedactingFormatter(logging.Formatter):
         record.msg = filter_datum(self.fields, self.REDACTION,
                                   record.getMessage(), self.SEPARATOR)
         return super(RedactingFormatter, self).format(record)
+
+
+def main() -> None:
+    """Obtain a database connection and retrieve all rows in the users table"""
+    fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
+    cols = fields.split(',')
+    logger = get_logger()
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(f"SELECT {fields} FROM users;")
+    for row in cursor:
+        msg = []
+        for idx, col in enumerate(cols):
+            msg.append(f'{col}={row[idx]}')
+        new = ';'.join(msg)
+        logger.info(new)
+    cursor.close()
+    db.close()
+
+
+if __name__ == '__main__':
+    main()
