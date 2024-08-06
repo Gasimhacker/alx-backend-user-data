@@ -3,6 +3,8 @@
 import binascii
 import base64
 from .auth import Auth
+from models.user import User
+from typing import TypeVar
 
 
 class BasicAuth(Auth):
@@ -38,3 +40,13 @@ class BasicAuth(Auth):
                 or ':' not in decoded_base64_authorization_header):
             return None, None
         return tuple(decoded_base64_authorization_header.split(':'))
+
+    def user_object_from_credentials(
+            self, user_email: str, user_pwd: str) -> TypeVar('User'):
+        """Extract a user object from the database"""
+        if (user_email is None or type(user_email) is not str
+                or user_pwd is None or type(user_pwd) is not str):
+            return None
+        user_list = User.search({'email': user_email})
+        if user_list and user_list[0].is_valid_password(user_pwd):
+            return user_list[0]
