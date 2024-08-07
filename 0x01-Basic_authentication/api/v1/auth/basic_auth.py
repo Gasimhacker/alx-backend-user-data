@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """The Basic Auth class"""
-import binascii
 import base64
 from .auth import Auth
 from models.user import User
@@ -29,7 +28,7 @@ class BasicAuth(Auth):
         try:
             return base64.b64decode(base64_authorization_header,
                                     validate=True).decode('utf-8')
-        except binascii.Error:
+        except Exception:
             None
 
     def extract_user_credentials(
@@ -54,3 +53,11 @@ class BasicAuth(Auth):
         for u in users:
             if u.is_valid_password(user_pwd):
                 return u
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """Return the current user based on the request header"""
+        header = self.authorization_header(request)
+        base_64_creds = self.extract_base64_authorization_header(header)
+        decoded_creds = self.decode_base64_authorization_header(base_64_creds)
+        creds = self.extract_user_credentials(decoded_creds)
+        return self.user_object_from_credentials(*creds)
