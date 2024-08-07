@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """The Auth class"""
+import re
 from flask import request
 from typing import List, TypeVar
 
@@ -17,18 +18,17 @@ class Auth:
             False: if
                     - path is in excluded_paths
         """
-        if not (path and excluded_paths):
-            return True
-        if path[-1] != '/':
-            path_with_slash = path + '/'
-
-        if path in excluded_paths or path_with_slash in excluded_paths:
-            return False
-        for p in excluded_paths:
-            if path.startswith(p) or p.startswith(path):
-                return False
-            if p[-1] == '*' and path.startswith(p[:-1]):
-                return False
+        if path is not None and excluded_paths is not None:
+            for exclusion_path in map(lambda x: x.strip(), excluded_paths):
+                pattern = ''
+                if exclusion_path[-1] == '*':
+                    pattern = '{}.*'.format(exclusion_path[0:-1])
+                elif exclusion_path[-1] == '/':
+                    pattern = '{}/*'.format(exclusion_path[0:-1])
+                else:
+                    pattern = '{}/*'.format(exclusion_path)
+                if re.match(pattern, path):
+                    return False
         return True
 
     def authorization_header(self, request=None) -> str:
