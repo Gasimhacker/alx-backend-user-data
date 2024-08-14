@@ -36,3 +36,8 @@ class DB:
         self._session.add(u)
         self._session.commit()
         return u
+
+    def find_user_by(self, **kwargs: dict) -> User:
+        """Create a User object"""
+        u = self._session.query(User).filter_by(**kwargs).one()
+        return u
