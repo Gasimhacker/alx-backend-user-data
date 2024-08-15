@@ -5,6 +5,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 
 from user import Base, User
 
@@ -39,5 +41,7 @@ class DB:
 
     def find_user_by(self, **kwargs: dict) -> User:
         """Create a User object"""
-        u = self._session.query(User).filter_by(**kwargs).one()
+        u = self._session.query(User).filter_by(**kwargs).first()
+        if u is None:
+            raise NoResultFound
         return u
