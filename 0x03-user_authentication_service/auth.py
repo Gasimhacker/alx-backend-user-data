@@ -2,6 +2,7 @@
 """Create a hash of the current password"""
 import bcrypt
 from db import DB
+from typing import Union
 from user import User
 from uuid import uuid4
 from sqlalchemy.orm.exc import NoResultFound
@@ -20,8 +21,8 @@ class Auth:
             u = self._db.find_user_by(email=email)
             raise ValueError(f'User {email} already exists')
         except NoResultFound:
-            password = _hash_password(password)
-            u = self._db.add_user(email, password)
+            pwd = _hash_password(password)
+            u = self._db.add_user(email, pwd)
             return u
 
     def valid_login(self, email: str, password: str) -> bool:
@@ -32,7 +33,7 @@ class Auth:
         except NoResultFound:
             return False
 
-    def create_session(self, email: str) -> str:
+    def create_session(self, email: str) -> Union[str, None]:
         """Create a session for this user"""
         try:
             u = self._db.find_user_by(email=email)
@@ -42,7 +43,7 @@ class Auth:
         except NoResultFound:
             return None
 
-    def get_user_from_session_id(self, session_id: str) -> User | None:
+    def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
         """Find a user by his session id"""
         if session_id is None:
             return None
