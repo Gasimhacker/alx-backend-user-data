@@ -42,7 +42,7 @@ class Auth:
         except NoResultFound:
             return None
 
-    def get_user_from_session_id(self, session_id: str) -> str | None:
+    def get_user_from_session_id(self, session_id: str) -> User | None:
         """Find a user by his session id"""
         if session_id is None:
             return None
