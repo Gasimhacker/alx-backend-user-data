@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Set up a basic Flask app"""
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect
 from auth import Auth
 
 
@@ -47,7 +47,7 @@ def logout():
     if u is None:
         abort(403)
     AUTH.destroy_session(u.id)
-    return index()
+    return redirect('/')
 
 
 if __name__ == "__main__":
