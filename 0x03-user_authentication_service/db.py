@@ -41,6 +41,9 @@ class DB:
 
     def find_user_by(self, **kwargs: dict) -> User:
         """Create a User object"""
+        for k, v in kwargs.items():
+            if k not in User.__dict__:
+                raise InvalidRequestError
         u = self._session.query(User).filter_by(**kwargs).first()
         if u is None:
             raise NoResultFound
