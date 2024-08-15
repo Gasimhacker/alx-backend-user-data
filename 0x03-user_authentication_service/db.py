@@ -39,7 +39,7 @@ class DB:
         self._session.commit()
         return u
 
-    def find_user_by(self, **kwargs: dict) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """Create a User object"""
         for k, v in kwargs.items():
             if k not in User.__dict__:
