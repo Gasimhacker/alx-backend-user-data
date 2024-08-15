@@ -45,3 +45,15 @@ class DB:
         if u is None:
             raise NoResultFound
         return u
+
+    def update_user(self, id: int, **kwargs) -> None:
+        """Update a User object"""
+        try:
+            u = self.find_user_by(id=id)
+        except NoResultFound:
+            raise ValueError
+        for k, v in kwargs.items():
+            if k not in User.__dict__:
+                raise ValueError
+            setattr(u, k, v)
+        self._session.commit()
